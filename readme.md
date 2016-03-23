@@ -1,4 +1,4 @@
-tryCatchWrap is a module for add try catch for most aync callbacks ,such xhr, timer, event listener callbacks.
+tryCatchWrap is a javascript module for add try catch for most aync callbacks ,such xhr, timer, event listener callbacks.
 
 1.require tryCatchWrap.js in your project
 
