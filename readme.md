@@ -5,6 +5,7 @@ tryCatchWrap is a javascript module for add try catch for most aync callbacks ,s
 2.demo code
 
   var errorCallBack = function(e){
+    
     //dispose javascript errors ,sunch report it to server for analysis
     
   };
