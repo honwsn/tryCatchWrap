@@ -13,4 +13,4 @@ tryCatchWrap is a tiny javascript  library for add try catch protection for most
 		};
 		
 		var tryCatchWrap = require(tryCatchWrap);
-		tryCatchWrap.initialize(errorCallBack);
+		tryCatchWrap.initialize(errorHandle);
