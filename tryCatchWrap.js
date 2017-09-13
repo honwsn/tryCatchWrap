@@ -1,16 +1,11 @@
 /**
- * Created by ianwang on 2016-3-10.
+ * Created by ianwang on 2016/03/10.
+ * tryCatchWrap 能捕获页面异步环境下所有的异常，
+ * 覆盖页面99.9%的js执行场景, 剩下的0.1就是页面的入口js
+ * 若页面入口，是异常拉取的js资源，那就覆盖100%
  */
 define(function (require, exports, module){
-
     var tryCatchWrap = {
-
-        initialize: function (errCatchCallBack){
-            if(errCatchCallBack && this.isFunction(errCatchCallBack)){
-                this.errCatchCallBack = errCatchCallBack;
-            }
-            this.wrapBuildIns();
-        },
 
         isFunction:function (what) {
             return typeof what === 'function';
@@ -21,7 +16,7 @@ define(function (require, exports, module){
         },
 
         wrap:function(func){
-
+            var self = this;
             if(func === void 0 || !this.isFunction(func)){
                 return func;
             }
@@ -38,12 +33,14 @@ define(function (require, exports, module){
             function wrapped() {
                 try {
                     return func.apply(this, arguments);
-                } catch (e) {
-                    if(this.errCatchCallBack && this.isFunction(this.errCatchCallBack)){
-                        this.errCatchCallBack.call(this, e);
+                } catch (err) {
+                    if(self.errorHandle) {
+                        self.errorHandle(err);
                     }
-
-                    throw e;
+                    else {
+                        var errMsg = err.stack ? err.stack : err.message;
+                        console.error(errMsg ? errMsg : 'unknown error happened....');
+                    }
                 }
             }
             // copy over properties of the old function
@@ -100,8 +97,7 @@ define(function (require, exports, module){
                 });
             }
 
-            // event targets borrowed from bugsnag-js:
-            // https://github.com/bugsnag/bugsnag-js/blob/master/src/bugsnag.js#L666
+            // async event targets in browser
             'EventTarget Window Node ApplicationCache XMLHttpRequest XMLHttpRequestEventTarget XMLHttpRequestUpload'.replace(/\w+/g, function (global) {
                 var proto = window[global] && window[global].prototype;
                 if (proto && proto.hasOwnProperty && proto.hasOwnProperty('addEventListener')) {
@@ -152,6 +148,19 @@ define(function (require, exports, module){
 
                 //$.Deferred add wrap...
             }
+        },
+
+        setErrorHandle: function(errorHandle) {
+            if(typeof errorHandle !== 'function') {
+                return;
+            }
+
+            this.errorHandle = errorHandle;
+        },
+
+        initialize: function(errorHandle) {
+            this.setErrorHandle(errorHandle);
+            this.wrapBuildIns();
         }
     };
 
