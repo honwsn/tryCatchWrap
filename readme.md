@@ -3,10 +3,13 @@ tryCatchWrap is a tiny javascript  library for add try catch protection for most
  1. require or import tryCatchWrap.js in your project (support es5, es6)
  2. demo code
 	
-		var errorCallBack = function(e){
+		const  errorHandle = function (err) {
+		    //1. console log
+		    var errMsg = err.stack ? err.stack : err.message;
+		    console.error(errMsg ? errMsg : 'unknown error  happened....');
 		    
-		//dispose javascript errors ,sunch report it to server for analysis
-		    
+		    //2. badJs report
+		    BJ_REPORT && BJ_REPORT.report(err);
 		};
 		
 		var tryCatchWrap = require(tryCatchWrap);
